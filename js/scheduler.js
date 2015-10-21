@@ -70,12 +70,12 @@ function updateCalendar() {
   
   if (this.needsUpdate(currentTime.getDay())) {
     
-    if (document.getElementById('calendar').hasChildNodes()) {
-      document.getElementById('calendar').childNodes[0].innerHTML = formatOutput(currentTime.getDay(), currentTime.getDate(), currentTime.getMonth(), currentTime.getFullYear());
+    if (document.getElementById('date').hasChildNodes()) {
+      document.getElementById('date').childNodes[0].innerHTML = formatOutput(currentTime.getDay(), currentTime.getDate(), currentTime.getMonth(), currentTime.getFullYear());
     } else {
       var e = document.createElement('div');
       e.innerHTML = this.formatOutput(currentTime.getDay(), currentTime.getDate(), currentTime.getMonth(), currentTime.getFullYear());
-      document.getElementById('calendar').appendChild(e);
+      document.getElementById('date').appendChild(e);
     }
     
     console.log("Updated calendar");
@@ -100,13 +100,30 @@ function updateWeather() {
     root.childNodes[0].innerHTML = information;
   }
   
+  this.updateIcon = function (id, icon) {
+    
+    var root = document.getElementById(id);
+    
+    if (!root.hasChildNodes()) {
+      var e = document.createElement('img');
+      root.appendChild(e);
+    }
+    
+    root.childNodes[0].src = "file:///C:/Users/plorenzo/Documents/Utils/magicmirror/icons/" + icon + ".png";
+  }
+  
   this.formatOutput = function (data) {
     
-    this.updateNode('city', data.name);
-    this.updateNode('icon', data.weather[0].icon);
-    this.updateNode('temperature', Math.round(data.main.temp) + '°C');
-    this.updateNode('summary', data.weather[0].main);
-    this.updateNode('maxmin_temp', 'min: ' + Math.round(data.main.temp_min) + '°C / max: ' + Math.round(data.main.temp_max) + '°C');
+    this.updateNode('city', data.name + ", Poland");
+    this.updateIcon('icon', data.weather[0].icon);
+    this.updateNode('temperature', Math.round(data.main.temp) + ' °C');
+    this.updateNode('summary', data.weather[0].description.charAt(0).toUpperCase() + data.weather[0].description.slice(1));
+    
+    if (data.main.temp_min !== undefined && data.main.temp_max !== undefined) {
+      this.updateNode('maxmin_temp', 'min: ' + Math.round(data.main.temp_min) + ' °C / max: ' + Math.round(data.main.temp_max) + ' °C');
+    } else {
+      this.updateNode('maxmin_temp', '');
+    }
   }
 
   $.ajax({
